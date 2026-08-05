@@ -10,7 +10,6 @@ import (
 const todoFilename=".todo.json"
 
 func main() {
-	fmt.Println("..::TODO App::..")
 	l:=&todo.List{}
 
 	if err := l.Get(todoFilename); err != nil {
@@ -24,7 +23,7 @@ func main() {
 			fmt.Println(item.Task)
 		}
 	default:
-		item:=strings.Join(os.Args[1:], "")
+		item:=strings.Join(os.Args[1:], " ")
 		l.Add(item)
 
 		if err:=l.Save(todoFilename); err != nil{
