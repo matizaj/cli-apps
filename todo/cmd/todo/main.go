@@ -7,12 +7,16 @@ import (
 	"os"
 )
 
-const todoFilename=".todo.json"
+var todoFilename=".todo.json"
 
 func main() {
 	var task string
 	var completed int
 	var list bool
+
+	if os.Getenv("TODO_FILENAME") != "" {
+		todoFilename = os.Getenv("TODO_FILENAME")
+	}
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(),
