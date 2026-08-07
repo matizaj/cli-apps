@@ -16,6 +16,7 @@ func main() {
 	var add bool
 	var completed int
 	var list bool
+	var del int
 
 	if os.Getenv("TODO_FILENAME") != "" {
 		todoFilename = os.Getenv("TODO_FILENAME")
@@ -33,6 +34,7 @@ func main() {
 	flag.BoolVar(&add, "add",false, "task to include in ToDo list")
 	flag.IntVar(&completed, "completed", 0, "task to mark as completed")
 	flag.BoolVar(&list, "list", false, "list all tasks")
+	flag.IntVar(&del, "del", -1, "delete selected item by index")
 
 	flag.Parse()
 
@@ -67,6 +69,16 @@ func main() {
 		}		
 		l.Add(t)
 
+		if err := l.Save(todoFilename); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	case del >= 0:
+		if err := l.Delete(del); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		
 		if err := l.Save(todoFilename); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
