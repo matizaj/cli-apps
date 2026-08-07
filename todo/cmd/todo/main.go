@@ -38,9 +38,7 @@ func main() {
 
 	switch {
 	case list: 
-		for _, item := range *l {
-			fmt.Println(item.Task)
-		}
+		fmt.Print(l)
 	case len(os.Args) ==1:
 		for _, item := range *l {
 			fmt.Println(item.Task)
