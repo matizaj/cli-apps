@@ -14,6 +14,14 @@ func main() {
 	var completed int
 	var list bool
 
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(),
+		"\n%s tool. Developed for learning\n", os.Args[0])
+	fmt.Fprintf(flag.CommandLine.Output(), "Copyright 2026\n")
+	fmt.Fprintf(flag.CommandLine.Output(), "Usage information\n")
+		flag.PrintDefaults()
+	}
+
 
 	flag.StringVar(&task, "task","", "task to include in ToDo list")
 	flag.IntVar(&completed, "completed", 0, "task to mark as completed")
