@@ -49,7 +49,7 @@ func (l *List) Delete(i int) error {
 	return nil
 }
 
-func (l * List) Save(filename string) error {
+func (l *List) Save(filename string) error {
 	js, err := json.Marshal(l)
 	if err != nil {
 		return err
