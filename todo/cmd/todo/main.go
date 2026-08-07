@@ -1,16 +1,19 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"matizaj/cli-apps/todo"
 	"os"
+	"strings"
 )
 
 var todoFilename=".todo.json"
 
 func main() {
-	var task string
+	var add bool
 	var completed int
 	var list bool
 
@@ -27,7 +30,7 @@ func main() {
 	}
 
 
-	flag.StringVar(&task, "task","", "task to include in ToDo list")
+	flag.BoolVar(&add, "add",false, "task to include in ToDo list")
 	flag.IntVar(&completed, "completed", 0, "task to mark as completed")
 	flag.BoolVar(&list, "list", false, "list all tasks")
 
@@ -56,8 +59,14 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	case task != "":
-		l.Add(task)
+	case add:
+		t, err := getTask(os.Stdin, flag.Args()...)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}		
+		l.Add(t)
+
 		if err := l.Save(todoFilename); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -67,4 +76,24 @@ func main() {
 		fmt.Fprintln(os.Stderr, "invalid option")
 		os.Exit(1)
 	}
+}
+
+
+func getTask(r io.Reader, args ...string)(string, error) {
+	if len(args)>0 {
+		return strings.Join(args, " "), nil
+	}
+
+	s:=bufio.NewScanner(r)
+	s.Scan()
+
+	if err := s.Err(); err != nil {
+		return "", err
+	}
+
+	if len(s.Text()) == 0 {
+		return "", fmt.Errorf("ask cannot be blank")
+	}
+
+	return s.Text(), nil
 }
