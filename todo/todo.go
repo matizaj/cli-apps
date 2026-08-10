@@ -88,3 +88,15 @@ func (l *List) Get(filename string) error {
 
 	return json.Unmarshal(file, l)
 }
+
+func (l *List) Verbose(filename string) (string, error) {
+	var result string
+	if err :=l.Get(filename); err != nil {
+		return "",err
+	}
+
+	for _, item := range *l {
+		result += fmt.Sprintf("Task: %s, Created at: %v, Done: %v\n", item.Task, item.CreatedAt.Format("02-01-2006"), item.Done)
+	}
+	return result, nil
+} 

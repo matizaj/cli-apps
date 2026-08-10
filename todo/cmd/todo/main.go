@@ -17,6 +17,7 @@ func main() {
 	var completed int
 	var list bool
 	var del int
+	var verbose bool
 
 	if os.Getenv("TODO_FILENAME") != "" {
 		todoFilename = os.Getenv("TODO_FILENAME")
@@ -35,6 +36,7 @@ func main() {
 	flag.IntVar(&completed, "completed", 0, "task to mark as completed")
 	flag.BoolVar(&list, "list", false, "list all tasks")
 	flag.IntVar(&del, "del", -1, "delete selected item by index")
+	flag.BoolVar(&verbose, "v", false, "display all propeties")
 
 	flag.Parse()
 
@@ -83,7 +85,13 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-
+	case verbose: 
+		txt, err := l.Verbose(todoFilename)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		fmt.Println(txt)
 	default:
 		fmt.Fprintln(os.Stderr, "invalid option")
 		os.Exit(1)
