@@ -100,3 +100,18 @@ func (l *List) Verbose(filename string) (string, error) {
 	}
 	return result, nil
 } 
+
+func (l *List) Unfinished(filename string) (string, error) {
+	var result string
+	if err :=l.Get(filename); err != nil {
+		return "",err
+	}
+
+	for _, item := range *l {
+		if !item.Done {
+			result += fmt.Sprintf("Task: %s\n ",item.Task)
+		}
+		
+	}
+	return result, nil
+} 
