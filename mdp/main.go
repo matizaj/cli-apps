@@ -14,7 +14,8 @@ import (
 const (
 	header = `<!DOCTYPE html>
 		<html>
-		<meta http-equiv="content-type" content="text/html;charset=utf-8>
+		<head>
+			<meta http-equiv="content-type" content="text/html;charset=utf-8">
 		<title>Markdown Preview Tool</title>
 		</head>
 		<body>`
