@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/microcosm-cc/bluemonday"
+	"github.com/russross/blackfriday/v2"
 )
 
 const (
@@ -54,9 +58,17 @@ func run(filename string) error {
 }
 
 func parseContent(b []byte) []byte {
-	return []byte{}
+	var buffer bytes.Buffer
+	output:= blackfriday.Run(b)
+
+	body:= bluemonday.UGCPolicy().SanitizeBytes(output)
+
+	buffer.WriteString(header)
+	buffer.Write(body)
+	buffer.WriteString(footer)
+	return buffer.Bytes()
 }
 
 func saveHtml(outName string, html []byte) error {
-	return nil
+	return os.WriteFile(outName, html, 0644)
 }
