@@ -63,7 +63,8 @@ func run(filename string, w io.Writer, skipPreview bool) error {
 		return err
 	}
 	outName := temp.Name()
-	fmt.Print(outName)
+	defer os.Remove(outName)
+	
 	fmt.Fprintln(w, outName)
 
 	if err:= saveHtml(outName, htmlData); err != nil {
