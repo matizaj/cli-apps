@@ -16,18 +16,17 @@ import (
 )
 
 const (
-	defaultTemplate = `
-		<!DOCTYPE html>
-		<html>
-			<head>
-				<meta http-equiv="content-type" content="text/html; charset=utf-8">
-				<title>{{.Title}}</title>
-			</head>
-			<body>
-				{{.Body}}
-			</body
-		</html>
-	`
+	defaultTemplate = `<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>{{ .Title }}</title>
+  </head>
+  <body>
+{{ .Body }}
+  </body>
+</html>
+`
 )
 
 type content struct {
@@ -74,7 +73,6 @@ func run(filename string, tFname string, w io.Writer, skipPreview bool) error {
 		return err
 	}
 	outName := temp.Name()
-	defer os.Remove(outName)
 	
 	fmt.Fprintln(w, outName)
 
@@ -85,6 +83,8 @@ func run(filename string, tFname string, w io.Writer, skipPreview bool) error {
 	if skipPreview {
 		return nil
 	}
+	
+	defer os.Remove(outName)
 
 	return preview(outName)
 }
@@ -107,7 +107,7 @@ func parseContent(b []byte, tFname string) ([]byte, error) {
 	}
 
 	c := content {
-		Title: "MDP",
+		Title: "Markdown Preview Tool",
 		Body: template.HTML(body),
 	}
 	if err := t.Execute(&buffer, c); err != nil {

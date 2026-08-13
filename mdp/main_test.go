@@ -1,60 +1,64 @@
 package main
 
 import (
-	"bytes"
-	"os"
-	"strings"
-	"testing"
-
+  "bytes"
+  "os"
+  "strings"
+  "testing"
 )
 
 const (
-	inputFile  = "./testdata/test.md"
-	resultFile = "test.md.html"
-	goldenFile = "./testdata/test.md.html"
+  inputFile  = "./testdata/test.md"
+  goldenFile = "./testdata/test.md.html"
 )
 
 func TestParseContent(t *testing.T) {
-	input, err := os.ReadFile(inputFile)
-	if err != nil {
-		t.Fatal(err)
-	}
-	result := parseContent(input)
-	// os.WriteFile(goldenFile, result, 0644) - make sure golden is a golden :)
-	expected, err := os.ReadFile(goldenFile)
-	if err != nil {
-		t.Fatal(err)
-	}
+  input, err := os.ReadFile(inputFile)
+  if err != nil {
+    t.Fatal(err)
+  }
 
-	if !bytes.Equal(expected, result) {
-		t.Logf("golden %s\n", expected)
-		t.Logf("result %s\n", result)
-		t.Error("result content does not match1")
-	}
+  result, err := parseContent(input, "")
+  if err != nil {
+    t.Fatal(err)
+  }
+
+  expected, err := os.ReadFile(goldenFile)
+  if err != nil {
+    t.Fatal(err)
+  }
+
+  if !bytes.Equal(expected, result) {
+    t.Logf("golden:\n%s\n", expected)
+    t.Logf("result:\n%s\n", result)
+    t.Error("Result content does not match golden file")
+  }
 }
 
 func TestRun(t *testing.T) {
-	var mockStdout bytes.Buffer
-	if err := run(inputFile, &mockStdout, true); err != nil {
-		t.Fatal(err)
-	}
-	resultFile := strings.TrimSpace(mockStdout.String())
-	result, err:= os.ReadFile(resultFile)
-	if err != nil {
-		t.Fatal(err)
-	}
+  var mockStdOut bytes.Buffer
 
-	expected, err:= os.ReadFile(goldenFile)
-	if err != nil {
-		t.Fatal(err)
-	}
+  if err := run(inputFile, "", &mockStdOut, true); err != nil {
+    t.Fatal(err)
+  }
 
-	if !bytes.Equal(expected, result) {
-		t.Logf("golden %s\n", expected)
-		t.Logf("result %s\n", result)
-		t.Error("result content does not match1")
-	}
+  resultFile := strings.TrimSpace(mockStdOut.String())
 
-	os.Remove(resultFile)
+  result, err := os.ReadFile(resultFile)
+  if err != nil {
+    t.Fatal(err)
+  }
 
+  expected, err := os.ReadFile(goldenFile)
+  if err != nil {
+    t.Fatal(err)
+  }
+
+  if !bytes.Equal(expected, result) {
+    t.Logf("golden:\n%s\n", expected)
+    t.Logf("result:\n%s\n", result)
+    t.Error("Result content does not match golden file")
+  }
+
+  os.Remove(resultFile)
 }
