@@ -40,6 +40,7 @@ func main() {
 	fmt.Println("MardDown Preview")
 
 	filename:=flag.String("file", "", "Markdown file to preview")
+	tFname:=flag.String("t", "", "Alternate template name")
 	skipPreview := flag.Bool("s", false, "skip auto-preview")
 	flag.Parse()
 
@@ -48,20 +49,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err:=run(*filename, os.Stdout, *skipPreview); err!= nil {
+	if err:=run(*filename, *tFname, os.Stdout, *skipPreview); err!= nil {
 		fmt.Fprintln(os.Stderr,err)
 		os.Exit(1)
 	}
 }
 
-func run(filename string, w io.Writer, skipPreview bool) error {
+func run(filename string, tFname string, w io.Writer, skipPreview bool) error {
 	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		fmt.Fprintln(os.Stderr,err)
 		os.Exit(1)
 	}
 
-	htmlData := parseContent(bytes)
+	htmlData, err := parseContent(bytes, tFname)
+	// todo: err handlid 
+
 	temp, err := os.CreateTemp("", "mdp*.html")
 	if err != nil {
 		fmt.Fprintln(os.Stderr,err)
@@ -86,16 +89,34 @@ func run(filename string, w io.Writer, skipPreview bool) error {
 	return preview(outName)
 }
 
-func parseContent(b []byte) []byte {
+func parseContent(b []byte, tFname string) ([]byte, error) {
 	var buffer bytes.Buffer
 	output:= blackfriday.Run(b)
 
 	body:= bluemonday.UGCPolicy().SanitizeBytes(output)
+	t, err := template.New("mdp").Parse(defaultTemplate)
+	if err != nil {
+		return nil, err
+	}
 
-	buffer.WriteString(header)
-	buffer.Write(body)
-	buffer.WriteString(footer)
-	return buffer.Bytes()
+	if tFname != "" {
+		t, err = template.ParseFiles(tFname)
+		if err != nil {
+		return nil, err
+		}
+	}
+
+	c := content {
+		Title: "MDP",
+		Body: template.HTML(body),
+	}
+	if err := t.Execute(&buffer, c); err != nil {
+		return nil, err
+	}
+	// buffer.WriteString(header)
+	// buffer.Write(body)
+	// buffer.WriteString(footer)
+	return buffer.Bytes(), nil
 }
 
 func saveHtml(outName string, html []byte) error {
