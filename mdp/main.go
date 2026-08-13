@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"html/template"
 	"io"
 	"os"
 	"os/exec"
@@ -15,18 +16,24 @@ import (
 )
 
 const (
-	header = `<!DOCTYPE html>
+	defaultTemplate = `
+		<!DOCTYPE html>
 		<html>
-		<head>
-			<meta http-equiv="content-type" content="text/html;charset=utf-8">
-		<title>Markdown Preview Tool</title>
-		</head>
-		<body>`
-
-	footer = `
-	</body>
-	</html>`
+			<head>
+				<meta http-equiv="content-type" content="text/html; charset=utf-8">
+				<title>{{.Title}}</title>
+			</head>
+			<body>
+				{{.Body}}
+			</body
+		</html>
+	`
 )
+
+type content struct {
+	Title string
+	Body template.HTML
+}
 
 
 func main() {
