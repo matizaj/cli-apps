@@ -35,7 +35,7 @@ func main() {
 		ext:  *ext,
 		size: *size,
 		list: *list,
-		del: *del,
+		del:  *del,
 	}
 
 	if err := run(*root, os.Stdout, c); err != nil {
