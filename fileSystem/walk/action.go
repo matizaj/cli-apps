@@ -8,7 +8,7 @@ import (
 )
 
 func filterOut(path, ext string, size int64, info os.FileInfo) bool {
-	if info.IsDir() || info.Size()< size {
+	if info.IsDir() || info.Size() < size {
 		return true
 	}
 	if ext != "" && filepath.Ext(path) != ext {
@@ -17,7 +17,7 @@ func filterOut(path, ext string, size int64, info os.FileInfo) bool {
 	return false
 }
 
-func listFiles(path string, out io.Writer) error{
+func listFiles(path string, out io.Writer) error {
 	_, err := fmt.Fprintln(out, path)
 	return err
 }

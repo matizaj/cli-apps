@@ -23,18 +23,17 @@ func main() {
 	root := flag.String("root", ".", "root directory")
 	list := flag.Bool("list", false, "list files")
 	ext := flag.String("ext", "", "file extension")
-	size:=flag.Int64("size", 0, "minimum file size")
-	
+	size := flag.Int64("size", 0, "minimum file size")
 
 	flag.Parse()
 
-	c:= config {
-		ext: *ext,
+	c := config{
+		ext:  *ext,
 		size: *size,
 		list: *list,
 	}
 
-	if err := run(*root, os.Stdout, c); err!=nil {
+	if err := run(*root, os.Stdout, c); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -42,7 +41,7 @@ func main() {
 
 func run(root string, out io.Writer, c config) error {
 	return filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if err!= nil {
+		if err != nil {
 			return err
 		}
 		if filterOut(path, c.ext, c.size, info) {
