@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -20,12 +21,20 @@ type config struct {
 
 	// delete matching file
 	del bool
+
+	wLog io.Writer
 }
+
+var (
+	f = os.Stdout
+	err error
+)
 
 func main() {
 	root := flag.String("root", ".", "root directory")
 	list := flag.Bool("list", false, "list files")
 	ext := flag.String("ext", "", "file extension")
+	logFile := flag.String("log", "", "log deletes to this file")
 	size := flag.Int64("size", 0, "minimum file size")
 	del := flag.Bool("del", false, "delete matching file")
 
@@ -36,6 +45,7 @@ func main() {
 		size: *size,
 		list: *list,
 		del:  *del,
+		wLog: f,
 	}
 
 	if err := run(*root, os.Stdout, c); err != nil {
@@ -45,6 +55,7 @@ func main() {
 }
 
 func run(root string, out io.Writer, c config) error {
+	delLogger:= log.New(c.wLog, "DELETED FILE", log.LstdFlags)
 	return filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -59,7 +70,7 @@ func run(root string, out io.Writer, c config) error {
 		}
 
 		if c.del {
-			return delFile(path)
+			return delFile(path, delLogger)
 		}
 
 		// default option
