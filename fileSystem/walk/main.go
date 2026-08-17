@@ -25,10 +25,7 @@ type config struct {
 	wLog io.Writer
 }
 
-var (
-	f = os.Stdout
-	err error
-)
+
 
 func main() {
 	root := flag.String("root", ".", "root directory")
@@ -39,6 +36,20 @@ func main() {
 	del := flag.Bool("del", false, "delete matching file")
 
 	flag.Parse()
+
+var (
+	f = os.Stdout
+	err error
+)
+
+if *logFile != ""{
+	f, err  = os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	defer f.Close()
+}
 
 	c := config{
 		ext:  *ext,
