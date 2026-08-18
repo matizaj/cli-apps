@@ -77,6 +77,8 @@ func TestRunDelExtensions(t *testing.T) {
         	buffer    bytes.Buffer
         	logBuffer bytes.Buffer
       		)
+			tc.cfg.wLog = &logBuffer
+
 			tempDir, cleanup := createTempDir(t, map[string]int {
 				tc.cfg.ext: tc.nDelete,
 				tc.extNoDelete: tc.nNoDelete,				
@@ -101,6 +103,7 @@ func TestRunDelExtensions(t *testing.T) {
 			}
 			expLogLines := tc.nDelete + 1
       		lines := bytes.Split(logBuffer.Bytes(), []byte("\n"))
+			
 			if len(lines) != expLogLines {
 				t.Errorf("Expected %d log lines, got %d instead\n",
 				expLogLines, len(lines))
@@ -121,5 +124,5 @@ func createTempDir(t *testing.T, files map[string]int) (dirname string, cleanup 
 			}
 		}
 	}
-	return tempDir, func() { os.Remove(tempDir) }
+	return tempDir, func() { os.RemoveAll(tempDir) }
 }

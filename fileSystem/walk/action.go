@@ -24,5 +24,10 @@ func listFiles(path string, out io.Writer) error {
 }
 
 func delFile(path string, delLog *log.Logger) error {
-	return os.Remove(path)
+	if err := os.Remove(path); err != nil {
+		return err
+	}
+
+	delLog.Println(path)
+	return nil
 }
