@@ -1,6 +1,7 @@
 package main
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
 	"log"
@@ -42,6 +43,7 @@ func archiveFile(destDir, root, path string) error {
 	}
 
 	relDir, err := filepath.Rel(root, filepath.Dir(path))
+	fmt.Println("[REL DIR]: %s\n", relDir)
 	if err != nil {
 		return err
 	}
@@ -53,5 +55,29 @@ func archiveFile(destDir, root, path string) error {
 		return err
 	}
 
-	return nil
+	out, err := os.OpenFile(targetPath, os.O_RDWR|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer out.Close()
+
+	in, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	zw := gzip.NewWriter(out)
+	zw.Name = filepath.Base(path)
+
+	if _, err := io.Copy(zw, in); err != nil {
+		return err
+	}
+
+	if err := zw.Close(); err != nil {
+		return err
+	}
+
+	return out.Close()
 }
