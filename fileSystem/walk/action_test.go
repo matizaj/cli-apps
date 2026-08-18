@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"testing"
 )
@@ -30,7 +29,7 @@ func TestFilterOut(t *testing.T) {
 
 			f := filterOut(tc.file, tc.ext, tc.minSize, info)
 			if f != tc.expected {
-				fmt.Errorf("Expected %t, got %t\n", tc.expected, f)
+				t.Errorf("Expected %t, got %t\n", tc.expected, f)
 			}
 		})
 	}

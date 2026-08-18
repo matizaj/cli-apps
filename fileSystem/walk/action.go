@@ -43,15 +43,14 @@ func archiveFile(destDir, root, path string) error {
 	}
 
 	relDir, err := filepath.Rel(root, filepath.Dir(path))
-	fmt.Println("[REL DIR]: %s\n", relDir)
 	if err != nil {
 		return err
 	}
 
-	dest:=fmt.Sprintf("%s.gz", filepath.Base(path))
-	targetPath:= filepath.Join(destDir, relDir, dest)
+	dest := fmt.Sprintf("%s.gz", filepath.Base(path))
+	targetPath := filepath.Join(destDir, relDir, dest)
 
-	if err:=os.MkdirAll(filepath.Dir(targetPath), 0755); err!= nil {
+	if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
 		return err
 	}
 
