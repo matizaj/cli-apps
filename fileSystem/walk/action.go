@@ -31,3 +31,27 @@ func delFile(path string, delLog *log.Logger) error {
 	delLog.Println(path)
 	return nil
 }
+
+func archiveFile(destDir, root, path string) error {
+	info, err := os.Stat(destDir)
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("%s is not a directory", destDir)
+	}
+
+	relDir, err := filepath.Rel(root, filepath.Dir(path))
+	if err != nil {
+		return err
+	}
+
+	dest:=fmt.Sprintf("%s.gz", filepath.Base(path))
+	targetPath:= filepath.Join(destDir, relDir, dest)
+
+	if err:=os.MkdirAll(filepath.Dir(targetPath), 0755); err!= nil {
+		return err
+	}
+
+	return nil
+}
