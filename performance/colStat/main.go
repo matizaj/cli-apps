@@ -23,5 +23,42 @@ func main() {
 }
 
 func run(filenames []string, op string, col int, out io.Writer) error {
-	return nil
+	var opFunc statsFunc
+
+	if len(filenames) ==0 {
+		return ErrNoFiles
+	}
+	if col <1 {
+		return ErrInvalidColumn
+	}
+
+	switch op {
+		case "s":
+			opFunc = sum
+		
+		case "a":
+			opFunc = avg
+		default:
+			return ErrInvalidOperation
+	}
+
+	consolidate := make([]float64, 0)
+	for _, fname := range filenames {
+		f, err := os.Open(fname)
+		if err != nil {
+			return err
+		}
+		data, err := csv2float(f, col)
+		if err != nil {
+			return err
+		}
+
+		if err := f.Close(); err != nil {
+			return err
+		}
+
+		consolidate = append(consolidate, data...)
+	}
+	_, err := fmt.Fprintln(out, opFunc(consolidate))
+	return err
 }
