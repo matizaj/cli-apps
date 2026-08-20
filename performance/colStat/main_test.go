@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"errors"
+	"os"
 	"testing"
 )
 
@@ -15,7 +16,11 @@ func TestRun(t *testing.T) {
 		files []string
 		expErr error
 	}{
-		{"RunAvg", 1, "a", "1", []string{".\\testdata\\example.csv"}, nil},
+		{"RunAvg", 1, "a", "1.5", []string{".\\testdata\\example.csv",".\\testdata\\example2.csv"}, nil},
+		{"RunSum", 1, "s", "6", []string{".\\testdata\\example.csv",".\\testdata\\example2.csv"}, nil},
+		{"RunFailedRead", 1, "s", "6", []string{".\\testdata\\example.csv",".\\testdata\\exampleNotExist.csv"}, os.ErrNotExist},
+		{"RunColumntNotExist", 100, "s", "6", []string{".\\testdata\\example.csv"}, ErrInvalidColumn},
+		{"RunFailOperation", 1, "sss", "6", []string{".\\testdata\\example.csv"}, ErrInvalidOperation},
 	}
 
 	for _, tc := range testCases {
