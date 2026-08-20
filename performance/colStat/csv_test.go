@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"testing"
+	"testing/iotest"
 )
 
 func TestOperations(t *testing.T) {
@@ -32,5 +36,54 @@ func TestOperations(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestCsv2Float(t *testing.T) {
+	csvData := `IP Address,Requests,Response Time
+192.168.0.199,2056,236
+192.168.0.88,899,220
+192.168.0.199,3054,226
+192.168.0.100,4133,218
+192.168.0.199,950,238
+`
+	testCases:=[]struct {
+		name string
+		col int 
+		exp []float64
+		expErr error
+		r io.Reader
+	}{
+		{"Column2", 2, []float64{2056, 899, 3054, 4133, 950}, nil, bytes.NewBufferString(csvData)},
+		{"Column3", 3, []float64{236, 220, 226, 218, 238}, nil, bytes.NewBufferString(csvData)},
+		{"FailRead", 1, nil, iotest.ErrTimeout, iotest.TimeoutReader(bytes.NewReader([]byte{0}))},
+		{"FailedNotNumber", 1, nil, ErrNotNumber, bytes.NewBufferString(csvData)},
+		{"FailedInvlidCOlumn", 4, nil, ErrInvalidColumn, bytes.NewBufferString(csvData)},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := csv2float(tc.r, tc.col)
+			if tc.expErr != nil {
+				if err == nil {
+					t.Errorf("expected error but got nil instead")
+				}
+
+				if !errors.Is(err, tc.expErr) {
+					t.Errorf("expected %q but got %q", tc.expErr, err)
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("unexpected err %q", err)
+			}
+
+			for i, exp := range tc.exp {
+				if res[i] != exp {
+					t.Errorf("expected %g but got %g", exp, res[i])
+				}
+ 			}
+		})
 	}
 }
