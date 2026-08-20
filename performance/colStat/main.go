@@ -59,6 +59,6 @@ func run(filenames []string, op string, col int, out io.Writer) error {
 
 		consolidate = append(consolidate, data...)
 	}
-	_, err := fmt.Fprintln(out, opFunc(consolidate))
+	_, err := fmt.Fprint(out, opFunc(consolidate))
 	return err
 }
