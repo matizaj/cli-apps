@@ -1,0 +1,4 @@
+github.com/zerfoo/zerfoo v1.59.0 h1:RvQy+ZmJCIZks8PoEm8pzuzK1Z3k/bozH/iN+pYT4f4=
+github.com/zerfoo/zerfoo v1.59.0/go.mod h1:XJ+JiQOL5SlmNfA7dlA5ER6jaOWLBljFfu8vGIErDhM=
+golang.org/x/tools v0.49.0 h1:3NI7VXzL9+1WZD52Dx2ttoPwD5DWrFGpl9mFZDlmisI=
+golang.org/x/tools v0.49.0/go.mod h1:SJNXV9DBKT0UbdttsQjbfJlAE/q+y36++zo3uL3N0Oo=

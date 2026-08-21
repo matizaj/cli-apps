@@ -1,0 +1,7 @@
+goos: windows
+goarch: amd64
+pkg: matizaj/cli-apps/performance/colStat
+cpu: Intel(R) Core(TM) Ultra 7 265H
+BenchmarkRun-16    	      10	1132609790 ns/op	534700347 B/op	 5038227 allocs/op
+PASS
+ok  	matizaj/cli-apps/performance/colStat	14.480s
