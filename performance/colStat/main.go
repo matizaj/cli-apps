@@ -89,5 +89,4 @@ func run(filenames []string, op string, col int, out io.Writer) error {
 			return err
 		}
 	}
-	
 }
