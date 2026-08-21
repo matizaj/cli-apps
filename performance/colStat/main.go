@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sync"
 )
 
 func main() {
@@ -23,8 +24,13 @@ func main() {
 }
 
 func run(filenames []string, op string, col int, out io.Writer) error {
-	var opFunc statsFunc
+	resChan := make(chan []float64)
+	errChan := make(chan error)
+	doneChan := make(chan struct{})
 
+	var opFunc statsFunc
+	var wg sync.WaitGroup
+	
 	if len(filenames) ==0 {
 		return ErrNoFiles
 	}
@@ -43,22 +49,45 @@ func run(filenames []string, op string, col int, out io.Writer) error {
 	}
 
 	consolidate := make([]float64, 0)
+
 	for _, fname := range filenames {
-		f, err := os.Open(fname)
-		if err != nil {
-			return err
-		}
-		data, err := csv2float(f, col)
-		if err != nil {
-			return err
-		}
+		wg.Add(1)
+		go func(filename string) {
+			defer wg.Done()
+			f, err := os.Open(fname)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			data, err := csv2float(f, col)
+			if err != nil {
+				errChan <-err
+				return
+			}
 
-		if err := f.Close(); err != nil {
-			return err
-		}
-
-		consolidate = append(consolidate, data...)
+			if err := f.Close(); err != nil {
+				errChan <- err
+				return
+			}
+			resChan <-data
+		}(fname)
 	}
-	_, err := fmt.Fprint(out, opFunc(consolidate))
-	return err
+
+	go func() {
+		wg.Wait()
+		close(doneChan)
+	}()
+
+	for{
+		select {
+		case err := <-errChan:
+			return err
+		case data := <-resChan:
+			consolidate = append(consolidate, data...)
+		case <-doneChan:
+			_, err := fmt.Fprint(out, opFunc(consolidate))
+			return err
+		}
+	}
+	
 }
