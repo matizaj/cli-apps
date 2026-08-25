@@ -10,17 +10,17 @@ import (
 )
 
 func TestRun(t *testing.T) {
-	testCases:= []struct{
-		name string
-		col int
-		op string
-		exp string
-		files []string
+	testCases := []struct {
+		name   string
+		col    int
+		op     string
+		exp    string
+		files  []string
 		expErr error
 	}{
-		{"RunAvg", 1, "a", "1.5", []string{".\\testdata\\example.csv",".\\testdata\\example2.csv"}, nil},
-		{"RunSum", 1, "s", "6", []string{".\\testdata\\example.csv",".\\testdata\\example2.csv"}, nil},
-		{"RunFailedRead", 1, "s", "6", []string{".\\testdata\\example.csv",".\\testdata\\exampleNotExist.csv"}, os.ErrNotExist},
+		{"RunAvg", 1, "a", "1.5", []string{".\\testdata\\example.csv", ".\\testdata\\example2.csv"}, nil},
+		{"RunSum", 1, "s", "6", []string{".\\testdata\\example.csv", ".\\testdata\\example2.csv"}, nil},
+		{"RunFailedRead", 1, "s", "6", []string{".\\testdata\\example.csv", ".\\testdata\\exampleNotExist.csv"}, os.ErrNotExist},
 		{"RunColumntNotExist", 100, "s", "6", []string{".\\testdata\\example.csv"}, ErrInvalidColumn},
 		{"RunFailOperation", 1, "sss", "6", []string{".\\testdata\\example.csv"}, ErrInvalidOperation},
 	}
@@ -28,7 +28,7 @@ func TestRun(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var buffer bytes.Buffer
-			err := run(tc.files,tc.op, tc.col, &buffer ) 
+			err := run(tc.files, tc.op, tc.col, &buffer)
 			if tc.expErr != nil {
 				if err == nil {
 					t.Errorf("expected error bu got nil")
@@ -52,13 +52,13 @@ func TestRun(t *testing.T) {
 
 func BenchmarkRun(b *testing.B) {
 	filenames, err := filepath.Glob(".\\testdata\\benchmark\\*.csv")
-	if err!= nil {
+	if err != nil {
 		b.Fatal(err)
 	}
 
 	b.ResetTimer()
 
-	for i:=0; i<b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		if err := run(filenames, "a", 2, io.Discard); err != nil {
 			b.Error(err)
 		}
