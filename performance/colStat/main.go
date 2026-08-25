@@ -43,9 +43,10 @@ func run(filenames []string, op string, col int, out io.Writer) error {
 	switch op {
 	case "s":
 		opFunc = sum
-
 	case "a":
 		opFunc = avg
+	case "max":
+		opFunc = max
 	default:
 		return ErrInvalidOperation
 	}
@@ -58,7 +59,7 @@ func run(filenames []string, op string, col int, out io.Writer) error {
 			filesChan <- fname
 		}
 	}()
-	
+
 	for i := 0; i < runtime.NumCPU(); i++ {
 		wg.Add(1)
 		go func() {

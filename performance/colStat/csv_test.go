@@ -9,6 +9,26 @@ import (
 	"testing/iotest"
 )
 
+func TestMaxValue(t *testing.T) {
+	testCases := []struct {
+		name string
+		data []float64
+		exp float64
+	}{
+		{name: "Max", data: []float64{10, 20, 15, 30, 45, 50, 100, 30}, exp: 100},
+		{name: "Max", data: []float64{10, -20, -15, -30, -45, -50, -100, -30}, exp: 10},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := max(tc.data)
+
+			if res != tc.exp {
+				t.Errorf("expected %v, but got %v\n", tc.exp, res)
+			}
+		})
+	}
+}
 func TestOperations(t *testing.T) {
 	data := [][]float64{
 		{10, 20, 15, 30, 45, 50, 100, 30},

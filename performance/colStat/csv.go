@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 )
 
@@ -21,6 +22,19 @@ func sum(data []float64) float64 {
 
 func avg(data []float64) float64 {
 	return sum(data) / float64(len(data))
+}
+
+func max(data []float64) float64 {
+	max := data[0]
+	for _, number := range data {
+		if math.IsNaN(number) {
+			continue
+		}
+		if number > max {
+			max = number
+		}
+	}
+	return max
 }
 
 func csv2float(r io.Reader, column int) ([]float64, error) {
