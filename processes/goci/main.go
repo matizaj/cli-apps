@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("..::GOCI::..")
-	
+
 	proj := flag.String("p","", "project directory path")
 	flag.Parse()
 
@@ -23,7 +23,7 @@ func main() {
 
 func run(proj string, out io.Writer) error {
 	if proj == "" {
-		return fmt.Errorf("project directory is required")
+		return fmt.Errorf("project directory is required %w", ErrValidation)
 	}
 	args := []string{"build", ".", "error"}
 
