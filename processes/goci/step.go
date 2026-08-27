@@ -17,10 +17,10 @@ func newStep(name, exe, message, proj string, args []string) step {
 func (s step) execute() (string, error) {
 	cmd := exec.Command(s.exe, s.args...)
 	cmd.Dir = s.proj
-	if err := cmd.Run(); err!= nil {
+	if err := cmd.Run(); err != nil {
 		return "", &stepErr{
-			step: s.name,
-			msg: "failed to execute",
+			step:  s.name,
+			msg:   "failed to execute",
 			cause: err,
 		}
 	}
