@@ -10,8 +10,8 @@ var (
 )
 
 type stepErr struct {
-	step string
-	msg string
+	step  string
+	msg   string
 	cause error
 }
 
@@ -24,9 +24,9 @@ func (s *stepErr) Is(target error) bool {
 	if !ok {
 		return false
 	}
-	return t.step==s.step
+	return t.step == s.step
 }
 
-func (s *stepErr) Unwrap()error {
+func (s *stepErr) Unwrap() error {
 	return s.cause
 }
