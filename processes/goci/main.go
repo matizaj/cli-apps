@@ -20,7 +20,7 @@ func main() {
 }
 
 func run(proj string, out io.Writer) error {
-	pipeline := make([]step, 1)
+	pipeline := make([]step, 2)
 	pipeline[0] = newStep(
 		"go build",
 		"go",
@@ -28,13 +28,20 @@ func run(proj string, out io.Writer) error {
 		proj,
 		[]string{"build", ".", "errors"},
 	)
+	pipeline[1] = newStep(
+		"go test",
+		"go",
+		"Go Test: SUCCESS",
+		proj,
+		[]string{"test", "-v"},
+	)
 	for _, s := range pipeline {
 		msg, err := s.execute()
 		if err != nil {
 			return err
 		}
 
-		_, err = fmt.Fprint(out, msg)
+		_, err = fmt.Fprintln(out, msg)
 		if err != nil {
 			return err
 		}
