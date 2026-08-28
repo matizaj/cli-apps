@@ -1,0 +1,41 @@
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"os/exec"
+)
+
+type exceptionStep struct {
+	step
+}
+
+func newExceptionStep(name, exe, message, proj string, args []string) exceptionStep {
+	s := exceptionStep{}
+	s.step = newStep(name, exe, message, proj, args)
+	return s
+}
+
+func (e exceptionStep) execute() (string, error) {
+	cmd := exec.Command(e.name, e.args...)
+	var out bytes.Buffer
+	cmd.Dir = e.proj
+	cmd.Stderr = &out
+	if err := cmd.Run(); err != nil {
+		return "", &stepErr{
+			step: e.step.name,
+			msg: "failed to execute",
+			cause: err,
+		}
+	}
+
+	if out.Len()>0 {
+		return "", &stepErr{
+			step: e.name,
+			msg: fmt.Sprintf("invalid format: %s", out.String()),
+			cause: nil,
+		}
+	}
+
+	return e.message, nil
+}
