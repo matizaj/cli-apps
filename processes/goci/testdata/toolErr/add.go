@@ -1,5 +1,5 @@
-package add 
+package add
 
-func add(a,b int) int {
-	return c+b
+func add(a, b int) int {
+	return c + b
 }

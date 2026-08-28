@@ -17,10 +17,10 @@ func newExceptionStep(name, exe, message, proj string, args []string) exceptionS
 }
 
 func (e exceptionStep) execute() (string, error) {
-	cmd := exec.Command(e.name, e.args...)
+	cmd := exec.Command(e.exe, e.args...)
 	var out bytes.Buffer
 	cmd.Dir = e.proj
-	cmd.Stderr = &out
+	cmd.Stdout = &out
 	if err := cmd.Run(); err != nil {
 		return "", &stepErr{
 			step: e.step.name,
