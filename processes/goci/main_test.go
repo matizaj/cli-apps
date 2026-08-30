@@ -16,10 +16,16 @@ func TestRun(t *testing.T) {
 		proj   string
 		out    string
 		expErr error
+		setupGit bool
 	}{
-		{name: "success", proj: "./testdata/tool/", out: "Go Build: SUCCESS\nGo Test: SUCCESS\nGoFmt: SUCCESS\nGit Push: SUCCESS\n", expErr: nil},
-		{name: "fail", proj: "./testdata/toolErr/", out: "failed", expErr: &stepErr{step: "go build"}},
-		{name: "fail format", proj: "./testdata/toolFmtErr/", out: "", expErr: &stepErr{step: "go fmt"}},
+		{name: "success", proj: "./testdata/tool/", out: "Go Build: SUCCESS\nGo Test: SUCCESS\nGoFmt: SUCCESS\nGit Push: SUCCESS\n", expErr: nil, setupGit: true},
+		{name: "fail", proj: "./testdata/toolErr/", out: "failed", expErr: &stepErr{step: "go build"}, setupGit: false},
+		{name: "fail format", proj: "./testdata/toolFmtErr/", out: "", expErr: &stepErr{step: "go fmt"}, setupGit:false},
+	}
+
+	_, err := exec.LookPath("git")
+	if err != nil {
+		t.Skip("Git not installed", err)
 	}
 
 	for _, tc := range testCases {
@@ -47,10 +53,18 @@ func TestRun(t *testing.T) {
 			if buffer.String() != tc.out {
 				t.Errorf("expected output %s, but got %s", tc.out, buffer.String())
 			}
+
+			if tc.setupGit {
+				cleanup := setupGit(t, tc.proj)
+				defer cleanup()
+			}
 		})
 	}
 }
-func setUpGit(t *testing.T, proj string) func() {
+
+
+
+func setupGit(t *testing.T, proj string) func() {
 	t.Helper()
 	gitExec, err := exec.LookPath("git")
 	if err != nil {
