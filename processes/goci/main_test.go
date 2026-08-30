@@ -71,26 +71,25 @@ func setupGit(t *testing.T, proj string) func() {
 		t.Fatal(err)
 	}
 
-	tempDir, err := os.CreateTemp("", "gocitest")
+	tempDir, err := os.MkdirTemp("", "gocitest")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer tempDir.Close()
-	tempDirName := tempDir.Name()
+	fmt.Printf("temp dir name: %s\n", tempDir)
 
 	projPath, err := filepath.Abs(proj)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	remoteURI := fmt.Sprintf("file://%s", tempDirName)
+	remoteURI := fmt.Sprintf("file://%s", tempDir)
 
 	var gitCmdList = []struct{
 		args []string
 		dir string
 		env []string
 	}{
-		{[]string{"init", "--bare"}, tempDirName, nil},
+		{[]string{"init", "--bare"}, tempDir, nil},
 		{[]string{"init"}, projPath, nil},
 		{[]string{"remote", "add", "origin",remoteURI},projPath , nil},
 		{[]string{"add", "."},projPath , nil},
@@ -116,7 +115,7 @@ func setupGit(t *testing.T, proj string) func() {
 	}
 
 	return func() {
-		os.RemoveAll(tempDirName)
+		os.RemoveAll(tempDir)
 		os.RemoveAll(filepath.Join(projPath, ".git"))
 	}
 }
