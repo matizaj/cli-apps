@@ -22,11 +22,13 @@ func newTimeoutStep(name, exe,message,proj string, args []string, timeout time.D
 	return s
 }
 
+var command = exec.CommandContext
+
 func (s timeoutStep) execute()(string, error) {
 	var out bytes.Buffer
 	ctx, cancel := context.WithTimeout(context.Background(), s.timeout)
 	defer cancel()
-	cmd:=exec.CommandContext(ctx, s.exe, s.args...)
+	cmd:=command(ctx, s.exe, s.args...)
 	cmd.Dir=s.proj
 	cmd.Stdout = &out
 
