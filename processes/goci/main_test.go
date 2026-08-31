@@ -5,13 +5,54 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"testing"
 	"time"
 )
+func TestRunKill(t *testing.T) {
+	testCases := []struct {
+		name   string
+		proj   string
+		sig    syscall.Signal
+		expErr error
+	}{
+		{"SIGINT", "./testdata/tool", syscall.SIGINT, ErrSignal},
+		{"SIGTERM", "./testdata/tool", syscall.SIGTERM, ErrSignal},
+		{"SIGQUIT", "./testdata/tool", syscall.SIGQUIT, nil},
+	}
 
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			command:=mockCmdTimeout
+			errChan:=make(chan error)
+			ignSigChan:=make(chan os.Signal,1)
+			expSigChan:=make(chan os.Signal,1)
+
+			signal.Notify(ignSigChan, syscall.SIGQUIT)
+			defer signal.Stop(ignSigChan)
+
+			signal.Notify(expSigChan, tc.sig)
+			defer signal.Stop(expSigChan)
+
+			go func(){
+				errChan<- run(tc.proj, io.Discard)
+			}()
+
+			go func() {
+				time.Sleep(2*time.Second)
+				p, err := os.FindProcess(os.Getpid())
+				if err == nil {
+					err = p.Signal(tc.sig)
+				}
+			}()
+		})
+	}
+}
 func TestRun(t *testing.T) {
 	testCases := []struct {
 		name   string
