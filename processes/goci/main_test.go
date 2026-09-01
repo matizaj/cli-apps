@@ -28,7 +28,7 @@ func TestRunKill(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			command:=mockCmdTimeout
+			command=mockCmdTimeout
 			errChan:=make(chan error)
 			ignSigChan:=make(chan os.Signal,1)
 			expSigChan:=make(chan os.Signal,1)
@@ -50,6 +50,27 @@ func TestRunKill(t *testing.T) {
 					err = p.Signal(tc.sig)
 				}
 			}()
+			select {
+			case err := <- errChan:
+				if err == nil {
+					t.Errorf("expected err but got nil")
+					return
+				}
+				if !errors.Is(err, tc.expErr) {
+					t.Errorf("expected %q, but got %q", tc.expErr, err)
+				}
+
+				// select signal
+				select {
+					case rec := <-expSigChan:
+					if rec != tc.sig {
+						t.Errorf("Expected signal %q, got %q", tc.sig, rec)
+					}
+					default:
+					t.Errorf("Signal not received")
+					}
+				case <-ignSigChan:
+			}
 		})
 	}
 }
