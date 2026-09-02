@@ -15,13 +15,13 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "pScan",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Fast TCP port scanner",
+	Long: `pScan - short for Port Scanner - executes TCP port scan
+	on a list of hosts
+	pScan allows you to add, list, and delete hosts from the list.
+	pScan executes a port scan on specified TCP ports. You can customize the
+	target ports using a command line flag.`,
+	Version: "0.1",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
