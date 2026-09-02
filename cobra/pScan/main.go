@@ -1,7 +1,11 @@
+/*
+Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+
+*/
 package main
 
-import "fmt"
+import "matizaj/cli-apps/cobra/pScan/cmd"
 
 func main() {
-	fmt.Println("Cobra pScan")
+	cmd.Execute()
 }
