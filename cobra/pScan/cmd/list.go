@@ -42,5 +42,15 @@ func init() {
 }
 
 func listAction(out io.Writer, file string, args []string) error{
+	hl := &scan.HostsList{}
+	if err := hl.Load(file); err!= nil {
+		return err
+	}
+
+	for _, host := range hl.Hosts {
+		if _, err := fmt.Fprintln(out, host); err != nil {
+			return err
+		}
+	}
 	return nil
 }
