@@ -34,3 +34,38 @@ func TestAdd(t *testing.T) {
 		})
 	}
 }
+
+func TestDelete(t * testing.T) {
+	testCases := []struct{
+		name string
+		host string
+		expectedLen int
+		expectedErr error
+	}{
+		{"RemoveExisting", "host2", 1, nil},
+		{"RemoveNotFound", "host3", 2, scan.ErrNotExists},
+	}
+
+	for _, tc :=range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			hostsList:=scan.HostsList{Hosts: []string{"host1", "host2"}}
+			err := hostsList.Remove(tc.host)
+			if tc.expectedErr != nil {
+				if err == nil {
+					t.Fatalf("expected error but got nil")
+				}
+				if !errors.Is(err, tc.expectedErr) {
+					t.Fatalf("expected error %q but got %q", tc.expectedErr, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("expected no error but got %q", err)
+			}
+
+			if len(hostsList.Hosts) != tc.expectedLen {
+				t.Fatalf("expected list length %d but %d insted", tc.expectedLen, len(hostsList.Hosts))
+			}
+		})
+	}
+}
