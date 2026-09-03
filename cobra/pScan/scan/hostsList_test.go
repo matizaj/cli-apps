@@ -3,6 +3,7 @@ package scan_test
 import (
 	"errors"
 	"matizaj/cli-apps/cobra/pScan/scan"
+	"os"
 	"testing"
 )
 
@@ -67,5 +68,31 @@ func TestDelete(t * testing.T) {
 				t.Fatalf("expected list length %d but %d insted", tc.expectedLen, len(hostsList.Hosts))
 			}
 		})
+	}
+}
+
+func TestSaveLoad(t *testing.T){
+	hl1:=scan.HostsList{}
+	hl2:=scan.HostsList{}
+	hostname:="host1"
+	filename:= "host-list.txt"
+	hl1.Add(hostname)
+
+	file, err := os.CreateTemp("", filename)
+	if err != nil {
+		t.Fatalf("unexpected err %q",err)
+	}
+
+	defer file.Close()
+
+	hl1.Save(file.Name())
+
+	err = hl2.Load(file.Name())
+	if err != nil {
+		t.Fatalf("unexpected err for loading %q", err)
+	}
+
+	if len(hl1.Hosts) != len(hl2.Hosts) {
+		t.Fatalf("expected %d but got %d",len(hl1.Hosts), len(hl2.Hosts))
 	}
 }
