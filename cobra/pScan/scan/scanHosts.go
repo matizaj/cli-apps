@@ -51,6 +51,8 @@ func Run(hl *HostsList, ports []int) []Result {
 		_, err := net.LookupHost(h)
 		if err != nil {
 			r.NotFound=true
+			res=append(res, r)
+			continue
 		}
 		
 		for _, p:=range ports {
