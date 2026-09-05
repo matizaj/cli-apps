@@ -1,34 +1,34 @@
 package scan
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"os"
 	"sort"
-	"bufio"
 )
 
 var (
-	ErrExists = errors.New("host already in the list")
+	ErrExists    = errors.New("host already in the list")
 	ErrNotExists = errors.New("host not in the list")
 )
 
-type HostsList struct{
-	Hosts	[]string
+type HostsList struct {
+	Hosts []string
 }
 
-func (hl *HostsList)search(host string)(bool, int) {
+func (hl *HostsList) search(host string) (bool, int) {
 	sort.Strings(hl.Hosts)
 
-	i:= sort.SearchStrings(hl.Hosts, host)
-	if i < len(hl.Hosts) && hl.Hosts[i]==host{
+	i := sort.SearchStrings(hl.Hosts, host)
+	if i < len(hl.Hosts) && hl.Hosts[i] == host {
 		return true, i
 	}
 	return false, -1
 }
 
 func (hl *HostsList) Add(host string) error {
-	if found, _  := hl.search(host); found {
+	if found, _ := hl.search(host); found {
 		return fmt.Errorf("%w: %s", ErrExists, host)
 	}
 	hl.Hosts = append(hl.Hosts, host)
@@ -36,7 +36,7 @@ func (hl *HostsList) Add(host string) error {
 }
 
 func (hl *HostsList) Remove(host string) error {
-	found, idx  := hl.search(host);
+	found, idx := hl.search(host)
 	if !found {
 		return fmt.Errorf("%w: %s", ErrNotExists, host)
 	}
@@ -56,16 +56,16 @@ func (hl *HostsList) Load(hostFile string) error {
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		hl.Hosts = append(hl.Hosts,scanner.Text())
+		hl.Hosts = append(hl.Hosts, scanner.Text())
 	}
 	return nil
 }
 
 func (hl *HostsList) Save(hostFile string) error {
-	output:= ""
+	output := ""
 	for _, h := range hl.Hosts {
-		output+=fmt.Sprintln(h)
+		output += fmt.Sprintln(h)
 	}
 
-	return os.WriteFile(hostFile,[]byte(output), 0644)
+	return os.WriteFile(hostFile, []byte(output), 0644)
 }
