@@ -19,7 +19,7 @@ var scanCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("scan called")
 
-		hostsFile, err := cmd.Flags().GetString("hosts-file.txt")
+		hostsFile, err := cmd.Flags().GetString("hosts-file")
 		if err != nil {
 			return err
 		}
