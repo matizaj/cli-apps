@@ -6,12 +6,13 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
-	"github.com/mitchellh/go-homedir"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
+var cfgFile string 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "pScan",
@@ -45,8 +46,19 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	cobra.OnInitialize(initConfig())
+	cobra.OnInitialize(initConfig)
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "","config file (default is $HOME/.pScan.yaml)")
 	rootCmd.PersistentFlags().StringP("hosts-file", "f", "pScan.hosts", "pScan hosts file")
+
+	replacer := strings.NewReplacer("-", "_")
+	viper.SetEnvKeyReplacer(replacer)
+	viper.SetEnvPrefix("PSCAN")
+
+	viper.BindPFlag("hosts-file", rootCmd.Flags().Lookup("hosts-file"))
+
+	versionTemplate:= `{{printf "%s: %s - version %s \n" .Name .Short .Vertsion}}`
+
+	rootCmd.SetVersionTemplate(versionTemplate)
 }
 
 func initConfig() {
@@ -58,6 +70,13 @@ func initConfig() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		viper.AddConfigPath(home)
+		viper.SetConfigName(".pScan")
+	}
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println("Using config file: ", viper.ConfigFileUsed())
 	}
 }
 
