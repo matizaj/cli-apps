@@ -1,6 +1,10 @@
 package main
 
-import "net/http"
+import (
+	"matizaj/cli-apps/todo"
+	"net/http"
+	"sync"
+)
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
@@ -15,4 +19,31 @@ func replyTextContent(w http.ResponseWriter, r *http.Request, status int, conten
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(status)
 	w.Write([]byte(content))
+}
+
+
+func todoRouter(todoFile string, l sync.Locker) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		list := &todo.List{}
+		l.Lock()
+		defer l.Unlock()
+
+		if err := list.Get(todoFile); err!= nil {
+			replyError(w,r,http.StatusInternalServerError, err.Error())
+			return
+		}
+		if r.URL.Path == "" {
+			switch r.Method {
+			case http.MethodGet:
+				getAllHandler(w,r,list)
+			case http.MethodPost:
+				addHandler(w,r,list, todoFile)
+			default:
+				message:="Method not supported"
+				replyError(w,r,http.StatusMethodNotAllowed, message)
+			}
+			return 
+		}
+		
+	}
 }
