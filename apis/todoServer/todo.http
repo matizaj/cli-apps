@@ -1,0 +1,10 @@
+### Pobieranie danych (Przykładowe zapytanie GET)
+GET http://localhost:7070
+
+### Wysyłanie danych (Przykładowe zapytanie POST)
+POST http://localhost:7070/todo
+Content-Type: application/json
+
+{
+    "task": "Nowy wpis",
+}
