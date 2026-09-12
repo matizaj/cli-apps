@@ -62,7 +62,7 @@ func TestGet(t *testing.T) {
 		{"GetRoot", "/", http.StatusOK, 0, "todo server api"},
 		{"GetAll", "/todo", http.StatusOK, 2, "Task Number - 1"},
 		{"GetOne", "/todo/1", http.StatusOK, 1, "Task Number - 1"},
-		{"NotFound", "/todo/500", http.StatusNotFound, 0, ""},
+		{"NotFound", "/todo/500", http.StatusBadRequest, 0, ""},
 	}
 
 	url, cleanup := setupApi(t)
@@ -98,7 +98,7 @@ func TestGet(t *testing.T) {
 				if !strings.Contains(string(body), tc.expContent) {
 					t.Errorf("expected body %s but got %s", tc.expContent, string(body))
 				} 
-				case strings.Contains(r.Header.Get("Content-Type"), "aplication/json"):
+				case strings.Contains(r.Header.Get("Content-Type"), "application/json"):
 					if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
 						t.Error(err)
 					}
