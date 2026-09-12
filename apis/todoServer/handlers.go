@@ -103,7 +103,7 @@ func addHandler(w http.ResponseWriter, r *http.Request, list *todo.List, todoFil
 		replyError(w,r,http.StatusInternalServerError, err.Error())
 		return
 	}
-	replyTextContent(w,r,http.StatusNoContent, "")
+	replyTextContent(w,r,http.StatusCreated, "")
 }
 func patchHandler(w http.ResponseWriter, r *http.Request, list *todo.List, id int, todoFile string) {
 	q := r.URL.Query()

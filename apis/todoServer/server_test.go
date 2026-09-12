@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"matizaj/cli-apps/todo"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -59,6 +60,8 @@ func TestGet(t *testing.T) {
 		expContent string
 	}{
 		{"GetRoot", "/", http.StatusOK, 0, "todo server api"},
+		{"GetAll", "/todo", http.StatusOK, 2, "Task Number - 1"},
+		{"GetOne", "/todo/1", http.StatusOK, 1, "Task Number - 1"},
 		{"NotFound", "/todo/500", http.StatusNotFound, 0, ""},
 	}
 
@@ -68,28 +71,40 @@ func TestGet(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var (
+				resp struct {
+					Results todo.List `json:results`
+					Date int64 `json:date`
+					TotalResults int 	`json:total_results`
+				}
 				body []byte
 				err error
 			)
-			resp, err := http.Get(url+tc.path)
+			r, err := http.Get(url+tc.path)
 			if err != nil {
 				t.Error(err)
 			}
 
-			defer resp.Body.Close()
+			defer r.Body.Close()
 
-			if tc.expCode != resp.StatusCode {
-				t.Fatalf("expected %d but got %d", tc.expCode, resp.StatusCode)
+			if tc.expCode != r.StatusCode {
+				t.Fatalf("expected %d but got %d", tc.expCode, r.StatusCode)
 			}
 
 			switch {
-			case strings.Contains(resp.Header.Get("Content-Type"), "text/plain"):
-				if body, err = io.ReadAll(resp.Body); err != nil {
+			case strings.Contains(r.Header.Get("Content-Type"), "text/plain"):
+				if body, err = io.ReadAll(r.Body); err != nil {
 					t.Error(err)
 				}
 				if !strings.Contains(string(body), tc.expContent) {
 					t.Errorf("expected body %s but got %s", tc.expContent, string(body))
 				} 
+				case strings.Contains(r.Header.Get("Content-Type"), "aplication/json"):
+					if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
+						t.Error(err)
+					}
+					if resp.TotalResults != tc.expItems {
+						t.Errorf("expected %d got %d", tc.expItems, resp.TotalResults)
+					}
 				default:
 					t.Errorf("unsupported content-type")
 			}
