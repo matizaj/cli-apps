@@ -1,1 +1,1 @@
-[{"Task":"{\r\n    \"task\": \"Nowy wpis\",\r\n}","Done":false,"CreatedAt":"2026-09-11T11:15:34.5138525+02:00","CompletedAt":"0001-01-01T00:00:00Z"}]
+[{"Task":"{\r\n    \"task\": \"Nowy wpis\",\r\n}","Done":true,"CreatedAt":"2026-09-11T11:15:34.5138525+02:00","CompletedAt":"2026-09-12T16:24:09.1103158+02:00"},{"Task":"{\r\n    \"task\": \"task2\",\r\n}","Done":false,"CreatedAt":"2026-09-12T16:24:30.622948+02:00","CompletedAt":"0001-01-01T00:00:00Z"}]

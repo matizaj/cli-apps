@@ -1,19 +1,52 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
 
 func setupApi(t *testing.T) (string, func()) {
 	t.Helper()
+	tempTodoFile, err := os.CreateTemp("", "todoTest")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tempTodoFile.Close()
 
-	ts:=httptest.NewServer(newMux(""))
+	ts:=httptest.NewServer(newMux(tempTodoFile.Name()))
+
+	for i:=1 ; i<3 ; i++ {
+		var body bytes.Buffer
+		taskName := fmt.Sprintf("Task Number - %d", i)
+		item := struct{
+			Task string `json:task`
+		}{
+			Task: taskName,
+		}
+
+		if err := json.NewEncoder(&body).Encode(item); err!= nil {
+			t.Fatal(err)
+		}
+
+		r, err := http.Post(ts.URL+"/todo", "application/json", &body)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if r.StatusCode != http.StatusCreated {
+			t.Fatalf("failed to add initial data %d", r.StatusCode)
+		}
+	}
 	return ts.URL, func() {
 		ts.Close()
+		os.Remove(tempTodoFile.Name())
 	}
 }
 
