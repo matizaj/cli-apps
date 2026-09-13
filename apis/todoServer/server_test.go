@@ -105,9 +105,60 @@ func TestGet(t *testing.T) {
 					if resp.TotalResults != tc.expItems {
 						t.Errorf("expected %d got %d", tc.expItems, resp.TotalResults)
 					}
+					if resp.Results[0].Task!= tc.expContent {
+						t.Errorf("expected %s got %s", tc.expContent, resp.Results[0].Task)
+					}
 				default:
 					t.Errorf("unsupported content-type")
 			}
 		})
 	}
+}
+
+func TestAdd(t *testing.T) {
+	url, cleanup := setupApi(t)
+	defer cleanup()
+
+	taskName:= "Task Number - 3"
+	t.Run("Add", func(t *testing.T) {
+		var body bytes.Buffer
+		item := struct{
+			Task string `json:task`
+		}{
+			Task: taskName,
+		}
+		if err :=json.NewEncoder(&body).Encode(item);err!= nil {
+			t.Fatal(err)
+		}
+
+		r, err := http.Post(url+"/todo","application/json", &body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		
+		if r.StatusCode != http.StatusCreated {
+			t.Errorf("expected status %d got %d", http.StatusCreated, r.StatusCode)
+		}
+	})
+
+	t.Run("CheckAdd", func(t *testing.T) {
+		r, err := http.Get(url+"/todo/3")
+		if err != nil {
+			t.Error(err)
+		}
+		
+		if r.StatusCode != http.StatusOK {
+			t.Errorf("expected status %d got %d", http.StatusOK, r.StatusCode)
+		}
+		defer r.Body.Close()
+
+		var resp todoResponse
+		if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
+			t.Fatal(err)
+		}
+
+		if resp.Results[0].Task != taskName {
+			t.Errorf("expected task %s got %s", taskName, resp.Results[0].Task)
+		}
+	})
 }
