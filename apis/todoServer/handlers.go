@@ -84,7 +84,7 @@ func validateId(path string, list *todo.List) (int, error) {
 	}
 
 	if id <1 || id > len(*list){
-		return 0, fmt.Errorf("%w: invalid Id: %s", ErrInvalidData, err)
+		return 0, fmt.Errorf("%w: invalid Id: %d", ErrNotFound, id)
 	}
 	return id, nil
 }
