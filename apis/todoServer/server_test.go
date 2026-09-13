@@ -62,7 +62,7 @@ func TestGet(t *testing.T) {
 		{"GetRoot", "/", http.StatusOK, 0, "todo server api"},
 		{"GetAll", "/todo", http.StatusOK, 2, "Task Number - 1"},
 		{"GetOne", "/todo/1", http.StatusOK, 1, "Task Number - 1"},
-		{"NotFound", "/todo/500", http.StatusBadRequest, 0, ""},
+		{"NotFound", "/todo/500", http.StatusNotFound, 0, ""},
 	}
 
 	url, cleanup := setupApi(t)
@@ -184,5 +184,47 @@ func TestDelete(t *testing.T) {
 		if r.StatusCode!= http.StatusNoContent {
 			t.Errorf("expected %d but got %d", http.StatusNoContent, r.StatusCode)
 		}
+	})
+}
+
+func TestComplete(t *testing.T) {
+	url, cleanup := setupApi(t)
+	defer cleanup()
+
+	u:=fmt.Sprintf("%s/todo/2?complete", url)
+
+	t.Run("Complete", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodPatch, u,nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		
+		if resp.StatusCode!= http.StatusNoContent {
+			t.Errorf("expected %d but got %d", http.StatusNoContent, resp.StatusCode)
+		}
+		t.Run("CheckComplete", func(t *testing.T) {
+			resp, err := http.Get(url+"/todo")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer resp.Body.Close()
+
+			var r todoResponse
+			if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+				t.Fatal(err)
+			}
+
+			if r.Results[1].Done != true {
+				t.Errorf("expected to be done: %v but got %v", true,  r.Results[1].Done)
+			}
+		})
+		
+		
 	})
 }
