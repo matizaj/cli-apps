@@ -1,14 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"matizaj/cli-apps/todo"
 	"net/http"
 	"strconv"
 	"sync"
-
 )
 
 var (
@@ -91,13 +90,15 @@ func validateId(path string, list *todo.List) (int, error) {
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request, list *todo.List, todoFile string) {
-	
-	todo, err := io.ReadAll(r.Body)
+	item:=struct{
+		Task string `json:task`
+	}{}
+	err := json.NewDecoder(r.Body).Decode(&item)
 	if err!= nil {
 		replyError(w,r,http.StatusInternalServerError, err.Error())
 		return
 	}
-	list.Add(string(todo))
+	list.Add(item.Task)
 	
 	if err := list.Save(todoFile); err!=nil {
 		replyError(w,r,http.StatusInternalServerError, err.Error())
