@@ -162,3 +162,27 @@ func TestAdd(t *testing.T) {
 		}
 	})
 }
+
+func TestDelete(t *testing.T) {
+	url,cleanup := setupApi(t)
+	defer cleanup()
+
+	t.Run("Delete", func(t *testing.T) {
+		u:=fmt.Sprintf("%s/todo/1", url)
+		req, err := http.NewRequest(http.MethodDelete, u, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		r, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		defer r.Body.Close()
+
+		if r.StatusCode!= http.StatusNoContent {
+			t.Errorf("expected %d but got %d", http.StatusNoContent, r.StatusCode)
+		}
+	})
+}
