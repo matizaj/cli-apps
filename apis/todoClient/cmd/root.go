@@ -1,17 +1,16 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
-	homedir ​"github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
+	//homedir ​"github.com/mitchellh/go-homedir"
 )
-
-
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -39,7 +38,7 @@ func init() {
 	// when this action is called directly.
 	rootCmd.PersistentFlags().String("api-root", "http://localhost:8080","Host todo api url")
 
-	replacer:=strings.Replace("-", "_")
+	replacer:=strings.NewReplacer("-", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	viper.SetEnvPrefix("TODO")
 
