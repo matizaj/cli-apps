@@ -74,8 +74,8 @@ func getAll(apiroot string) ([]item, error) {
 	return getItems(u)
 }
 
-func getOne(url string, id int) (item, error) {
-	u:=fmt.Sprintf("%s/todo/%d", url, id)
+func getOne(url string, id string) (item, error) {
+	u:=fmt.Sprintf("%s/todo/%s", url, id)
 	r, err := newClient().Get(u)
 	if err != nil {
 		return item{}, err

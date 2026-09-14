@@ -17,13 +17,13 @@ var viewCmd = &cobra.Command{
 	Short: "Get single item",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Println("view called")
-		hosturl, err:=cmd.Flags().GetString("api-host")
-		id, err := cmd.Flags().GetInt("id")
+		hosturl, err:=cmd.Flags().GetString("api-root")
 		if err!= nil {
 			return err
 		}
-		return viewAction(os.Stdout, hosturl, id)
+		return viewAction(os.Stdout, hosturl, args[0])
 	},
+	Args: cobra.ExactArgs(1),
 }
 
 func init() {
@@ -39,7 +39,7 @@ func init() {
 	// is called directly, e.g.:
 	// viewCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-func viewAction(out io.Writer, hosturl string, id int) error {
+func viewAction(out io.Writer, hosturl string, id string) error {
 	item, err := getOne(hosturl, id)
 	if err != nil {
 		return err
