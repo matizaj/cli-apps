@@ -61,4 +61,15 @@ func getItems(url string) ([]item, error) {
 	if err := json.NewDecoder(r.Body).Decode(&resp); err != nil {
 		return nil, err
 	}
+
+	if resp.Totalresults ==0 {
+		return nil, fmt.Errorf("%w", ErrNotForund)
+	}
+
+	return resp.Results, nil
+}
+
+func getAll(apiroot string) ([]item, error) {
+	u:=fmt.Sprintf("%s/todo", apiroot)
+	return getItems(u)
 }
