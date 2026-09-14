@@ -73,3 +73,25 @@ func getAll(apiroot string) ([]item, error) {
 	u:=fmt.Sprintf("%s/todo", apiroot)
 	return getItems(u)
 }
+
+func getOne(url string, id int) (item, error) {
+	u:=fmt.Sprintf("%s/todo/%d", url, id)
+	r, err := newClient().Get(u)
+	if err != nil {
+		return item{}, err
+	}
+
+	defer r.Body.Close()
+
+	if r.StatusCode != http.StatusOK {
+		return item{}, fmt.Errorf("%w: %s", ErrNotForund, err)
+	}
+
+	var resp response
+
+	if err :=json.NewDecoder(r.Body).Decode(&resp);err!= nil {
+		return item{}, err
+	}
+
+	return resp.Results[0], nil
+}
