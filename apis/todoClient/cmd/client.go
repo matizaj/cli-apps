@@ -76,8 +76,8 @@ func getAll(apiroot string) ([]item, error) {
 	return getItems(u)
 }
 
-func getOne(url string, id string) (item, error) {
-	u:=fmt.Sprintf("%s/todo/%s", url, id)
+func getOne(url string, id int) (item, error) {
+	u:=fmt.Sprintf("%s/todo/%d?complete", url, id)
 	r, err := newClient().Get(u)
 	if err != nil {
 		return item{}, err
@@ -110,6 +110,26 @@ func addItem(hosturl string, task string) error {
 	}
 	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("%w: %s", ErrInvalidResponse, err)
+func completeItem(hosturl string, id int) error {
+	url, err:=newClient().Get(hosturl)
+	if err!= nil {
+		return err
+	}
+	u:=fmt.Sprintf("%s/todo/%d", url, id)
+	req, err := http.NewRequest(http.MethodPatch, u, nil)
+	if err!= nil {
+		return err
+	}
+
+	defer req.Body.Close()
+
+	r, err := http.DefaultClient.Do(req)
+	if err!= nil {
+		return err
+	}
+
+	if r.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("not completed %w", err)
 	}
 	return nil
 }

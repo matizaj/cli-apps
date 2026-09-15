@@ -12,41 +12,44 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// viewCmd represents the view command
-var viewCmd = &cobra.Command{
-	Use:   "view",
-	Short: "Get single item",
+// completeCmd represents the complete command
+var completeCmd = &cobra.Command{
+	Use:   "complete",
+	Short: "Mark item as completed",
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("view called")
+		fmt.Println("complete called")
+
 		hosturl, err:=cmd.Flags().GetString("api-root")
-		if err!= nil {
+		if err != nil {
 			return err
 		}
-		return viewAction(os.Stdout, hosturl, args[0])
+		return completeAction(os.Stdout, hosturl, args[0])
 	},
-	Args: cobra.ExactArgs(1),
 }
 
 func init() {
-	rootCmd.AddCommand(viewCmd)
+	rootCmd.AddCommand(completeCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// viewCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// completeCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// viewCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// completeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
-func viewAction(out io.Writer, hosturl string, arg string) error {
+func completeAction(out io.Writer, hosturl string, arg string) error {
 	id, err := strconv.Atoi(arg)
-	if err != nil {
+	if err!= nil {
 		return err
 	}
-	item, err := getOne(hosturl, id)
-	if err != nil {
+
+	completeItem(hosturl, id)
+	item, err:=getOne(hosturl, id)
+	if err!= nil {
 		return err
 	}
 	fmt.Fprintf(os.Stdout, item.Task)
