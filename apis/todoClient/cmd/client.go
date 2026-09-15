@@ -95,3 +95,27 @@ func getOne(url string, id string) (item, error) {
 
 	return resp.Results[0], nil
 }
+
+func completeItem(hosturl string, id int) error {
+	url, err:=newClient().Get(hosturl)
+	if err!= nil {
+		return err
+	}
+	u:=fmt.Sprintf("%s/todo/%d", url, id)
+	req, err := http.NewRequest(http.MethodPatch, u, nil)
+	if err!= nil {
+		return err
+	}
+
+	defer req.Body.Close()
+
+	r, err := http.DefaultClient.Do(req)
+	if err!= nil {
+		return err
+	}
+
+	if r.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("not completed %w", err)
+	}
+	return nil
+}
