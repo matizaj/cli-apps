@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"matizaj/cli-apps/todo"
 	"net/http"
 	"strconv"
@@ -90,10 +91,13 @@ func validateId(path string, list *todo.List) (int, error) {
 }
 
 func addHandler(w http.ResponseWriter, r *http.Request, list *todo.List, todoFile string) {
+	log.Println("add item")
 	item:=struct{
 		Task string `json:task`
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&item)
+	log.Printf("BODY: %v\n", r.Body)
+	log.Printf("task: %v\n", item)
 	if err!= nil {
 		replyError(w,r,http.StatusInternalServerError, err.Error())
 		return
@@ -104,6 +108,7 @@ func addHandler(w http.ResponseWriter, r *http.Request, list *todo.List, todoFil
 		replyError(w,r,http.StatusInternalServerError, err.Error())
 		return
 	}
+	log.Printf("list: %v\n", list.String())
 	replyTextContent(w,r,http.StatusCreated, "")
 }
 func patchHandler(w http.ResponseWriter, r *http.Request, list *todo.List, id int, todoFile string) {

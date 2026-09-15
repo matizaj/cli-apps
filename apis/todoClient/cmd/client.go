@@ -1,12 +1,12 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -99,7 +99,16 @@ func getOne(url string, id int) (item, error) {
 
 func addItem(hosturl string, task string) error {
 	u:=fmt.Sprintf("%s/todo", hosturl)
-	req, err := http.NewRequest(http.MethodPost, u, strings.NewReader(task))
+	item := struct{
+		Task string `json:task`
+	}{
+		Task: task,
+	}
+	var buffer bytes.Buffer
+	if err := json.NewEncoder(&buffer).Encode(item);err!= nil {
+		return err
+	}
+	req, err := http.NewRequest(http.MethodPost, u, &buffer)
 	if err!= nil {
 		return err
 	}
@@ -108,7 +117,7 @@ func addItem(hosturl string, task string) error {
 		return err
 	}
 	defer resp.Body.Close()
-	
+
 	fmt.Println(resp)
 	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("%w: %s", ErrInvalidResponse, err)
