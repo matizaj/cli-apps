@@ -110,6 +110,10 @@ func addItem(hosturl string, task string) error {
 	}
 	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("%w: %s", ErrInvalidResponse, err)
+	}
+	return nil
+}
+
 func completeItem(hosturl string, id int) error {
 	url, err:=newClient().Get(hosturl)
 	if err!= nil {
