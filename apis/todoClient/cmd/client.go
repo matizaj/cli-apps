@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -94,4 +96,20 @@ func getOne(url string, id string) (item, error) {
 	}
 
 	return resp.Results[0], nil
+}
+
+func addItem(hosturl string, task string) error {
+	u:=fmt.Sprintf("%s/todo", hosturl)
+	req, err := http.NewRequest(http.MethodPost, u, strings.NewReader(task))
+	if err!= nil {
+		return err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err!= nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("%w: %s", ErrInvalidResponse, err)
+	}
+	return nil
 }
