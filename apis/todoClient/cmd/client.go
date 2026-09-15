@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -108,6 +107,9 @@ func addItem(hosturl string, task string) error {
 	if err!= nil {
 		return err
 	}
+	defer resp.Body.Close()
+	
+	fmt.Println(resp)
 	if resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("%w: %s", ErrInvalidResponse, err)
 	}
