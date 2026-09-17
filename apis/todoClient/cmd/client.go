@@ -109,6 +109,7 @@ func addItem(hosturl string, task string) error {
 		return err
 	}
 	req, err := http.NewRequest(http.MethodPost, u, &buffer)
+	req.Header.Set("Content-Type", "application/json")
 	if err!= nil {
 		return err
 	}

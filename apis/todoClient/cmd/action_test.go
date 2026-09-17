@@ -10,16 +10,16 @@ import (
 func TestAddAction(t *testing.T) {
 	expUrl:="/todo"
 	expMethod:= http.MethodPost
-	expBody:="{\"task\":\"Task 1\"}"
+	expBody:="{\"task\":\"Task 1\"}\n"
 	expContentType:="application/json"
 	args:="Task 1"
 
 	url, cleanup:=mockServer(func(w http.ResponseWriter, r * http.Request) {
 		if r.URL.Path != expUrl {
-			t.Errorf("expected path %q got %q", r.URL.Path, expUrl)
+			t.Errorf("expected path %q got %q",expUrl, r.URL.Path)
 		}
 		if r.Method != expMethod {
-			t.Errorf("expected method type %q got %q", r.Method, expMethod)
+			t.Errorf("expected method type %q got %q",expMethod, r.Method)
 		}
 
 		body, err := io.ReadAll(r.Body)
@@ -30,11 +30,11 @@ func TestAddAction(t *testing.T) {
 		defer r.Body.Close()
 
 		if string(body) != expBody {
-			t.Errorf("expected body %q got %q", string(body), expBody)
+			t.Errorf("expected body %q got %q",expBody, string(body))
 		}
-		ct:= w.Header().Get("Content-Type")
+		ct:= r.Header.Get("Content-Type")
 		if ct!= expContentType {
-			t.Errorf("expected content-type %q got %q", ct, expContentType)
+			t.Errorf("expected content-type %q got %q",expContentType, ct)
 		}
 	})
 
