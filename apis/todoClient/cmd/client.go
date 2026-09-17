@@ -26,9 +26,9 @@ type item struct {
 }
 
 type response struct {
-	Results []item	`json:results`
-	Date int	`json:date`
-	Totalresults int	`json:total_results`
+	Results []item	`json:"results"`
+	Date int	`json:"date"`
+	Totalresults int	`json:"total_results"`
 }
 
 func newClient() *http.Client {
@@ -100,7 +100,7 @@ func getOne(url string, id int) (item, error) {
 func addItem(hosturl string, task string) error {
 	u:=fmt.Sprintf("%s/todo", hosturl)
 	item := struct{
-		Task string `json:task`
+		Task string `json:"task"`
 	}{
 		Task: task,
 	}
