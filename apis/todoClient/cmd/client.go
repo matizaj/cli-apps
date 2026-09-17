@@ -126,11 +126,12 @@ func addItem(hosturl string, task string) error {
 }
 
 func completeItem(hosturl string, id int) error {
-	url, err:=newClient().Get(hosturl)
+	re, err:=newClient().Get(hosturl)
 	if err!= nil {
 		return err
 	}
-	u:=fmt.Sprintf("%s/todo/%d", url, id)
+	defer re.Body.Close()
+	u:=fmt.Sprintf("%s/todo/%d", hosturl, id)
 	req, err := http.NewRequest(http.MethodPatch, u, nil)
 	if err!= nil {
 		return err

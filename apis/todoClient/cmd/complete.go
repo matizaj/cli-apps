@@ -52,6 +52,6 @@ func completeAction(out io.Writer, hosturl string, arg string) error {
 	if err!= nil {
 		return err
 	}
-	fmt.Fprintf(os.Stdout, item.Task)
+	fmt.Fprintln(os.Stdout, item.Task)
 	return nil
 }
