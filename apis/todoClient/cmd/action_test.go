@@ -36,6 +36,8 @@ func TestAddAction(t *testing.T) {
 		if ct!= expContentType {
 			t.Errorf("expected content-type %q got %q",expContentType, ct)
 		}
+		w.WriteHeader(testResp["created"].Status)
+		
 	})
 
 	defer cleanup()
