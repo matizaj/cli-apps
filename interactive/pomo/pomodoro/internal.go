@@ -1,6 +1,7 @@
 package pomodoro
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -53,6 +54,8 @@ type IntervalConfig struct {
 	LongBreakDuration time.Duration
 }
 
+type Callback func(Interval)
+
 
 func NewConfig(repo Repository, pomodoro, shortBreak, longBreak time.Duration) *IntervalConfig{
 	cfg:= &IntervalConfig{
@@ -104,4 +107,52 @@ func nextCategory(r Repository)(string, error) {
 	}
 
 	return CategoryLongBreak, nil
+}
+
+func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic, end Callback) error {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	i, err := config.repo.ById(id)
+	if err != nil {
+		return err
+	}
+
+	expire := time.After(i.PlannedDuration - i.ActualDuration)
+	start(i)
+
+	for {
+		select {
+		case <-ticker.C:
+			i, err := config.repo.ById(id)
+			if err != nil {
+				return err
+			}
+
+			if i.State == StatePaused {
+				return nil
+			}
+			i.ActualDuration += time.Second
+			if err:= config.repo.Update(i); err != nil {
+				return err
+			}
+
+			periodic(i)
+		case <-expire:
+			i, err := config.repo.ById(id)
+			if err != nil {
+				return err
+			}
+			i.State= StateDone
+			end(i)
+			return config.repo.Update(i)
+		case <-ctx.Done():
+			i, err := config.repo.ById(id)
+			if err != nil {
+				return err
+			}
+			i.State = StateCancelled
+			return config.repo.Update(i)
+		}
+	}
 }
