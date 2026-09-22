@@ -156,3 +156,27 @@ func tick(ctx context.Context, id int64, config *IntervalConfig, start, periodic
 		}
 	}
 }
+
+func newInterval(cfg *IntervalConfig) (Interval, error) {
+	i := Interval{}
+
+	cat, err := nextCategory(cfg.repo)
+	if err != nil {
+		return i, err
+	}
+	i.Category = cat
+	switch cat {
+	case CategoryPomodoro:
+		i.PlannedDuration = cfg.PomodoroDuration
+	case CategoryShortBreak:
+		i.PlannedDuration = cfg.ShortBreakDuration
+	case CategoryLongBreak:
+		i.PlannedDuration = cfg.LongBreakDuration
+	}
+
+	if i.Id, err = cfg.repo.Create(i); err != nil {
+		return i, err
+	}
+
+	return i, nil 
+}
