@@ -191,7 +191,7 @@ func GetInterval(cfg *IntervalConfig) (Interval, error) {
 		return i, err
 	}
 
-	if err == nil && i.State == StateCancelled && i.State == StateDone {
+	if err == nil && i.State != StateCancelled && i.State != StateDone {
 		return i, nil
 	}
 
