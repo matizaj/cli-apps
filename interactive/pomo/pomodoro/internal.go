@@ -180,3 +180,20 @@ func newInterval(cfg *IntervalConfig) (Interval, error) {
 
 	return i, nil 
 }
+
+func GetInterval(cfg *IntervalConfig) (Interval, error) {
+	i:=Interval{}
+
+	var err error
+
+	i, err = cfg.repo.Last()
+	if err != nil && err != ErrNoIntervals {
+		return i, err
+	}
+
+	if err == nil && i.State == StateCancelled && i.State == StateDone {
+		return i, nil
+	}
+
+	return newInterval(cfg)
+}
