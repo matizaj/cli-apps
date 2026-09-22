@@ -3,6 +3,7 @@ package pomodoro
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -196,4 +197,25 @@ func GetInterval(cfg *IntervalConfig) (Interval, error) {
 	}
 
 	return newInterval(cfg)
+}
+
+func (i Interval)Start(ctx context.Context, cfg *IntervalConfig, start, periodic, end Callback) error {
+	switch i.State {
+	case StateRunning:
+		return nil
+	case StateNotStarted:
+		i.StartTime = time.Now()
+		fallthrough
+	case StatePaused:
+		i.State = StateRunning
+		if err := cfg.repo.Update(i); err != nil {
+			return err
+		}
+		return tick(ctx, i.Id,cfg,start,periodic, end)
+	case StateCancelled, StateDone:
+		return fmt.Errorf("cannot start", ErrNoIntervalCompleted)
+	default:
+		return fmt.Errorf("%w: %d", ErrInvalidState, i.Id)
+
+	}
 }
