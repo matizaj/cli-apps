@@ -36,3 +36,15 @@ func (r *inMemoryRepo)Update(i pomodoro.Interval)error {
 	r.intervals[i.Id-1] = i
 	return nil
 }
+
+func (r *inMemoryRepo)ById(id int64)(pomodoro.Interval, error) {
+	r.Lock()
+	defer r.Unlock()
+
+	i:=pomodoro.Interval{}
+	if id ==0 {
+		return i, fmt.Errorf("%w: %d", pomodoro.ErrInvalidId, i.Id)
+	}
+	i=r.intervals[id-1]
+	return i, nil
+}
