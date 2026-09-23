@@ -219,3 +219,12 @@ func (i Interval)Start(ctx context.Context, cfg *IntervalConfig, start, periodic
 
 	}
 }
+
+func (i Interval)Pause(cfg *IntervalConfig) error {
+	if i.State != StateRunning {
+		return ErrIntervalNotRunning
+	}
+	i.State = StatePaused
+
+	return cfg.repo.Update(i)
+}
