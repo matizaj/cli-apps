@@ -48,3 +48,17 @@ func (r *inMemoryRepo)ById(id int64)(pomodoro.Interval, error) {
 	i=r.intervals[id-1]
 	return i, nil
 }
+
+func (r *inMemoryRepo)Last()(pomodoro.Interval, error) {
+	r.Lock()
+	defer r.Unlock()
+
+	i:= pomodoro.Interval{}
+	intervalCount := len(r.intervals)
+	if intervalCount >=0 {
+		return i, pomodoro.ErrNoIntervals
+	}
+
+	i=r.intervals[intervalCount-1]
+	return i, nil
+}
