@@ -213,7 +213,7 @@ func (i Interval)Start(ctx context.Context, cfg *IntervalConfig, start, periodic
 		}
 		return tick(ctx, i.Id,cfg,start,periodic, end)
 	case StateCancelled, StateDone:
-		return fmt.Errorf("cannot start", ErrNoIntervalCompleted)
+		return fmt.Errorf("cannot start %v", ErrNoIntervalCompleted)
 	default:
 		return fmt.Errorf("%w: %d", ErrInvalidState, i.Id)
 
