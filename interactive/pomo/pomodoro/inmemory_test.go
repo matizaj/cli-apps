@@ -19,6 +19,13 @@ func TestNewConfig(t *testing.T) {
 		expect pomodoro.IntervalConfig
 	}{
 		{   name: "Default",
+			expect: pomodoro.IntervalConfig{
+				PomodoroDuration: 25*time.Minute, 
+				ShortBreakDuration: 5*time.Minute, 
+				LongBreakDuration: 15*time.Minute,
+			},
+		},
+		{   name: "SingleInput",
 			input: [3]time.Duration{
 				20*time.Minute,
 			}, 
@@ -26,6 +33,18 @@ func TestNewConfig(t *testing.T) {
 				PomodoroDuration: 20*time.Minute, 
 				ShortBreakDuration: 5*time.Minute, 
 				LongBreakDuration: 15*time.Minute,
+			},
+		},
+		{   name: "MultiInput",
+			input: [3]time.Duration{
+				20*time.Minute,
+				10*time.Minute,
+				12*time.Minute,
+			}, 
+			expect: pomodoro.IntervalConfig{
+				PomodoroDuration: 20*time.Minute, 
+				ShortBreakDuration: 10*time.Minute, 
+				LongBreakDuration: 12*time.Minute,
 			},
 		},
 	}
