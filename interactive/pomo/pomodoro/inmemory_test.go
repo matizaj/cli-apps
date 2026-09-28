@@ -1,6 +1,7 @@
 package pomodoro_test
 
 import (
+	"context"
 	"matizaj/cli-apps/interactveTools/pomo/pomodoro"
 	"matizaj/cli-apps/interactveTools/pomo/pomodoro/repository"
 	"testing"
@@ -127,7 +128,7 @@ func TestStart(t *testing.T) {
         t.Fatal(err)
       }
 
-      i, err = repo.ByID(i.ID)
+      i, err = repo.ById(i.Id)
       if err != nil {
         t.Fatal(err)
       }
